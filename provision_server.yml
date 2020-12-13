@@ -45,7 +45,7 @@
       register: deploy_vms
       loop: "{{ vms }}"
   - name: Create PXE files for auto-install
-    hosts: lcuccssiemconn.lcmchealth.org
+    hosts: "{{ tftp_server }}"
     remote_user: provision
     become: true
     become_method: sudo
