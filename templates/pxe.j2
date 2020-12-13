@@ -1,0 +1,5 @@
+DEFAULT ipxe
+
+LABEL ipxe
+        kernel ipxe.lkrn
+        append initrd=pxelinux.cfg/01-{{ deploy_vm.instance.hw_eth0.macaddress_dash }}.ipxe

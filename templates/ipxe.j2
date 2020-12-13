@@ -1,0 +1,51 @@
+#!ipxe
+
+dhcp
+
+#console --x 1024 --y 768 --picture http://lcuccssiemconn/files/sapphire_pxe.png --depth 32
+
+echo Boot menu
+menu Sapphire PXE boot Menu
+item localboot Boot to Local Drive
+item centos8 Sapphire CentOS 8 Install
+
+choose --default centos8 --timeout 5000 os && goto ${os}
+
+:localboot
+sanboot --no-describe --drive 0x80
+
+:centos8
+set hostnamevar {{ deploy_vm.instance.hw_name }}.{{ domain }}
+set ipvar {{ deploy_vm.item.ip }}
+set netmaskvar {{ deploy_vm.item.netmask }}
+set gatewayvar {{ deploy_vm.item.gateway }}
+set dnsvar1 {{ deploy_vm.item.dns1 }}
+set dnsvar2 {{ deploy_vm.item.dns2 }}
+
+#echo -n Hostname (FQDN): && read hostnamevar
+#echo -n IP Address: ${} && read ipvar
+#echo -n Subnet Mask: ${} && read netmaskvar
+#echo -n Gateway: ${} && read gatewayvar
+#echo -n DNS Server 1 (comma-separated): ${} && read dnsvar1
+#echo -n DNS Server 2 (comma-separated): ${} && read dnsvar2
+#echo
+echo Installing CentOS8 with the following parameters:
+echo
+echo Hostname: ${hostnamevar}
+echo IP Address: ${ipvar}
+echo Subnet Mask: ${netmaskvar}
+echo Gateway: ${gatewayvar}
+echo DNS Server 1: ${dnsvar1}
+echo DNS Server 2: ${dnsvar2}
+echo
+echo Kernel Parameters: imgargs vmlinuz ip=${ipvar}::${gatewayvar}:${netmaskvar}:${hostnamevar}:ens160:none nameserver=${dnsvar1} nameserver=${dnsvar2} initrd=initrd.img ramdisk_size=100000 ks=http://lcuccssiemconn.lcmchealth.org/ks/centos8.ks
+echo
+#echo -n Press ENTER to continue... && read enter
+kernel http://lcuccssiemconn.lcmchealth.org/centos/8/os/x86_64/isolinux/vmlinuz
+initrd http://lcuccssiemconn.lcmchealth.org/centos/8/os/x86_64/isolinux/initrd.img
+imgargs vmlinuz ip=${ipvar}::${gatewayvar}:${netmaskvar}:${hostnamevar}:ens160:none nameserver=${dnsvar1} nameserver=${dnsvar2} initrd=initrd.img ramdisk_size=100000 ks=http://lcuccssiemconn.lcmchealth.org/ks/centos8.ks
+boot || goto failed
+
+:failed
+echo Booting failed, dropping to shell
+shell
