@@ -1,6 +1,6 @@
 # Example Ansible VMware Build with Kickstart and PXE/iPXE
 
-* install pyvmomi and python requests library
+* Install pyvmomi and python requests library
 * Update vars.yml for your environment
 * Update hosts with your tftp/http server
 
