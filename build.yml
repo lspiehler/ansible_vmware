@@ -1,0 +1,88 @@
+---
+  - name: Provision Server
+    hosts: localhost
+    connection: local
+    tasks:
+    - name: Create a virtual machine in vCenter
+      vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: no
+        datacenter: "{{ vcenter_datacenter }}"
+        folder: "{{ vcenter_folder }}"
+        name: "{{ item.name }}"
+        state: poweredoff
+        guest_id: "{{ vcenter_guestid }}"
+        # This is hostname of particular ESXi server on which user wants VM to be deployed
+        cluster: "{{ vcenter_cluster }}"
+        disk:
+        - size_gb: 25
+          type: thin
+          datastore: "{{ vcenter_datastore }}"
+        hardware:
+          memory_mb: 2048
+          num_cpus: 1
+          scsi: lsilogic
+        networks:
+        - name: "{{ vcenter_network }}"
+          #mac: aa:bb:dd:aa:00:14
+          #ip: "{{ item.ip }}"
+          #netmask: "{{ item.netmask }}"
+          #gateway: "{{ item.gateway }}"
+          device_type: vmxnet3
+          #dns_servers:
+          #- "{{ item.dns1 }}"
+          #- "{{ item.dns2 }}"
+        wait_for_ip_address: no
+      delegate_to: localhost
+      register: deploy_vms
+      loop: "{{ vms }}"
+  - name: Create PXE files for auto-install
+    hosts: "{{ tftp_server }}"
+    remote_user: provision
+    become: true
+    become_method: sudo
+    become_user: root
+    vars:
+      deploy_vms: "{{ hostvars['localhost']['deploy_vms'] }}"
+    tasks:
+    - name: Show Deployed VM Attributes
+      debug:
+        var: item
+      loop: "{{ deploy_vms.results }}"
+    - name: Create PXE file for new VM
+      template: 
+        src: pxe.j2
+        dest: /var/lib/tftpboot/pxelinux.cfg/01-{{ deploy_vm.instance.hw_eth0.macaddress_dash }}
+      loop: "{{ deploy_vms.results }}"
+      loop_control:
+        loop_var: deploy_vm
+    - name: Create iPXE file for new VM
+      template: 
+        src: ipxe.j2
+        dest: /var/lib/tftpboot/pxelinux.cfg/01-{{ deploy_vm.instance.hw_eth0.macaddress_dash }}.ipxe
+      loop: "{{ deploy_vms.results }}"
+      loop_control:
+        loop_var: deploy_vm
+    - name: Create kickstart file for new VM
+      template: 
+        src: kickstart.j2
+        dest: /var/www/html/default/ks/{{ deploy_vm.instance.hw_eth0.macaddress_dash }}.ks
+      loop: "{{ deploy_vms.results }}"
+      loop_control:
+        loop_var: deploy_vm
+  - name: Power On VMs
+    hosts: localhost
+    connection: local
+    tasks:
+    - name: Power on VMs to begin install
+      vmware_guest:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: no
+        uuid: "{{ item.instance.hw_product_uuid }}"
+        state: poweredon
+      delegate_to: localhost
+      loop: "{{ deploy_vms.results }}"

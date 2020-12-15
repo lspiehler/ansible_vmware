@@ -38,12 +38,12 @@ echo Gateway: ${gatewayvar}
 echo DNS Server 1: ${dnsvar1}
 echo DNS Server 2: ${dnsvar2}
 echo
-echo Kernel Parameters: imgargs vmlinuz ip=${ipvar}::${gatewayvar}:${netmaskvar}:${hostnamevar}:ens160:none nameserver=${dnsvar1} nameserver=${dnsvar2} initrd=initrd.img ramdisk_size=100000 ks=http://lcuccssiemconn.lcmchealth.org/ks/centos8.ks
+echo Kernel Parameters: imgargs vmlinuz ip=${ipvar}::${gatewayvar}:${netmaskvar}:${hostnamevar}:ens160:none nameserver=${dnsvar1} nameserver=${dnsvar2} initrd=initrd.img ramdisk_size=100000 ks=http://lcuccssiemconn.lcmchealth.org/ks/{{ deploy_vm.instance.hw_eth0.macaddress_dash }}.ks
 echo
 #echo -n Press ENTER to continue... && read enter
 kernel http://lcuccssiemconn.lcmchealth.org/centos/8/os/x86_64/isolinux/vmlinuz
 initrd http://lcuccssiemconn.lcmchealth.org/centos/8/os/x86_64/isolinux/initrd.img
-imgargs vmlinuz ip=${ipvar}::${gatewayvar}:${netmaskvar}:${hostnamevar}:ens160:none nameserver=${dnsvar1} nameserver=${dnsvar2} initrd=initrd.img ramdisk_size=100000 ks=http://lcuccssiemconn.lcmchealth.org/ks/centos8.ks
+imgargs vmlinuz ip=${ipvar}::${gatewayvar}:${netmaskvar}:${hostnamevar}:ens160:none nameserver=${dnsvar1} nameserver=${dnsvar2} initrd=initrd.img ramdisk_size=100000 ks=http://lcuccssiemconn.lcmchealth.org/ks/{{ deploy_vm.instance.hw_eth0.macaddress_dash }}.ks
 boot || goto failed
 
 :failed
