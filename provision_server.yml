@@ -2,12 +2,6 @@
   - name: Provision Server
     hosts: localhost
     connection: local
-    #vars_prompt:
-    #- name: "vcenter_username"
-    #  prompt: "vCenter Username"
-    #  private: no
-    #- name: "vcenter_password"
-    #  prompt: "vCenter Password"
     tasks:
     - name: Create a virtual machine in vCenter
       vmware_guest:
@@ -16,22 +10,22 @@
         password: "{{ vcenter_password }}"
         validate_certs: no
         datacenter: "{{ vcenter_datacenter }}"
-        folder: /
+        folder: "{{ vcenter_folder }}"
         name: "{{ item.name }}"
         state: poweredoff
-        guest_id: centos64Guest
+        guest_id: "{{ vcenter_guest }}"
         # This is hostname of particular ESXi server on which user wants VM to be deployed
         cluster: "{{ vcenter_cluster }}"
         disk:
         - size_gb: 25
           type: thin
-          datastore: ESX_NFS_N2_03
+          datastore: "{{ vcenter_datastore }}"
         hardware:
           memory_mb: 2048
           num_cpus: 1
           scsi: lsilogic
         networks:
-        - name: VM Network VLAN 254
+        - name: "{{ vcenter_network }}"
           #mac: aa:bb:dd:aa:00:14
           #ip: "{{ item.ip }}"
           #netmask: "{{ item.netmask }}"
