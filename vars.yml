@@ -1,0 +1,50 @@
+---
+  vcenter_hostname: vcenterserver.domain.com
+  vcenter_cluster: MyCluster
+  vcenter_datacenter: MyDatacenter
+  vcenter_datastore: MyDatastore
+  vcenter_network: MyNetwork
+  vcenter_guestid: centos64Guest
+  vcenter_folder: /
+  vcenter_username: vcenteruser
+  vcenter_password: vcenterpass
+  domain: mydomain
+  tftp_server: tftpserver.domain.com
+  vms:
+    - name: ansibletest02
+      ip: 10.250.4.202
+      netmask: 255.255.255.0
+      gateway: 10.250.4.1
+      dns1: 10.15.1.110
+      dns2: 10.15.1.111
+    - name: ansibletest03
+      ip: 10.250.4.203
+      netmask: 255.255.255.0
+      gateway: 10.250.4.1
+      dns1: 10.15.1.110
+      dns2: 10.15.1.111
+    - name: ansibletest04
+      ip: 10.250.4.204
+      netmask: 255.255.255.0
+      gateway: 10.250.4.1
+      dns1: 10.15.1.110
+      dns2: 10.15.1.111
+    - name: ansibletest05
+      ip: 10.250.4.205
+      netmask: 255.255.255.0
+      gateway: 10.250.4.1
+      dns1: 10.15.1.110
+      dns2: 10.15.1.111
+    - name: ansibletest06
+      ip: 10.250.4.206
+      netmask: 255.255.255.0
+      gateway: 10.250.4.1
+      dns1: 10.15.1.110
+      dns2: 10.15.1.111
+    - name: ansibletest07
+      ip: 10.250.4.207
+      netmask: 255.255.255.0
+      gateway: 10.250.4.1
+      dns1: 10.15.1.110
+      dns2: 10.15.1.111
+...
